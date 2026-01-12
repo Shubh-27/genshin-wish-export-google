@@ -5,6 +5,7 @@ require('./getData')
 require('./excel')
 require('./UIGFJson')
 // require('./gists')
+require('./googleDrive')
 const { getUpdateInfo } = require('./update/index')
 
 const isDev = !app.isPackaged

@@ -38,7 +38,7 @@ const getTimeString = () => {
 
 const formatDate = (date) => {
   let y = date.getFullYear()
-  let m = `${date.getMonth()+1}`.padStart(2, '0')
+  let m = `${date.getMonth() + 1}`.padStart(2, '0')
   let d = `${date.getDate()}`.padStart(2, '0')
   return `${y}-${m}-${d} ${date.toLocaleString('zh-cn', { hour12: false }).slice(-8)}`
 }
@@ -227,7 +227,7 @@ const generateUigf30Json = async () => {
   return result
 }
 
-const generateUigf41Json = async (uigfAllAccounts=true) => {
+const generateUigf41Json = async (uigfAllAccounts = true) => {
   const { dataMap, current } = getData()
   if (!Array.from(dataMap.entries()).reduce((accumulate, account) => accumulate + account[1].result.size, 0)) {
     throw new Error('数据为空')
@@ -254,7 +254,7 @@ const generateUigf41Json = async (uigfAllAccounts=true) => {
       list: []
     }
     for (const [gachaType, gachaList] of data.result) {
-      for (const gacha of gachaList){
+      for (const gacha of gachaList) {
         const gachaItem = {
           uigf_gacha_type: gachaType,
           gacha_type: gachaType,
@@ -280,7 +280,7 @@ const generateUigf41Json = async (uigfAllAccounts=true) => {
   return result
 }
 
-const start = async (uigfVersion, uigfAllAccounts=true) => {
+const start = async (uigfVersion, uigfAllAccounts = true) => {
   await initLookupTable()
   const result = uigfVersion === "3.0" ? await generateUigf30Json() : await generateUigf41Json(uigfAllAccounts)
   await saveLookupTable()
@@ -310,51 +310,51 @@ const saveAndBackup = async (data) => {
 }
 
 const importUgif30Json = async (importData) => {
+  const gachaData = {
+    result: new Map(),
+    time: Date.now(),
+    typeMap: getItemTypeNameMap(importData.info.lang),
+    uid: importData.info.uid,
+    lang: importData.info.lang
+  }
+  gachaData.typeMap.forEach((_, k) => gachaData.result.set(k, []))
+  importData.list.sort((a, b) => parseInt(BigInt(a.id) - BigInt(b.id)))
+  for (const item of importData.list) {
+    gachaData.result.get(item.uigf_gacha_type).push([
+      item.time,
+      item.name,
+      item.item_type,
+      parseInt(item.rank_type),
+      item.gacha_type,
+      item.id
+    ])
+  }
+  await saveAndBackup(gachaData)
+}
+
+const importUgif41Json = async (importData) => {
+  for (const accountData of importData.hk4e) {
     const gachaData = {
       result: new Map(),
       time: Date.now(),
-      typeMap: getItemTypeNameMap(importData.info.lang),
-      uid: importData.info.uid,
-      lang: importData.info.lang
+      typeMap: getItemTypeNameMap(accountData.lang),
+      uid: accountData.uid,
+      lang: accountData.lang
     }
     gachaData.typeMap.forEach((_, k) => gachaData.result.set(k, []))
-    importData.list.sort((a, b) => parseInt(BigInt(a.id) - BigInt(b.id)))
-    for (const item of importData.list) {
-      gachaData.result.get(item.uigf_gacha_type).push([
+    accountData.list.sort((itemA, itemB) => parseInt(BigInt(itemA.id) - BigInt(itemB.id)))
+    for (const item of accountData.list) {
+      const gachaItem = [
         item.time,
         item.name,
         item.item_type,
         parseInt(item.rank_type),
         item.gacha_type,
-        item.id 
-      ])
+        item.id
+      ]
+      gachaData.result.get(item.uigf_gacha_type).push(gachaItem)
     }
     await saveAndBackup(gachaData)
-}
-
-const importUgif41Json = async (importData) => {
-  for (const accountData of importData.hk4e) {
-      const gachaData = {
-        result: new Map(),
-        time: Date.now(),
-        typeMap: getItemTypeNameMap(accountData.lang),
-        uid: accountData.uid,
-        lang: accountData.lang
-      }
-      gachaData.typeMap.forEach((_, k) => gachaData.result.set(k, []))
-      accountData.list.sort((itemA, itemB) => parseInt(BigInt(itemA.id) - BigInt(itemB.id)))
-      for (const item of accountData.list) {
-        const gachaItem = [
-          item.time,
-          item.name,
-          item.item_type,
-          parseInt(item.rank_type),
-          item.gacha_type,
-          item.id
-        ]
-        gachaData.result.get(item.uigf_gacha_type).push(gachaItem)
-      }
-      await saveAndBackup(gachaData)
   }
 }
 
@@ -391,7 +391,7 @@ const importJson = async () => {
   }
 }
 
-ipcMain.handle('EXPORT_UIGF_JSON', async (event, uigfVersion, uigfAllAccounts=true) => {
+ipcMain.handle('EXPORT_UIGF_JSON', async (event, uigfVersion, uigfAllAccounts = true) => {
   await start(uigfVersion, uigfAllAccounts)
 })
 
@@ -399,4 +399,4 @@ ipcMain.handle('IMPORT_UIGF_JSON', async () => {
   return await importJson()
 })
 
-module.exports = { generateUigf30Json, generateUigf41Json }
+module.exports = { generateUigf30Json, generateUigf41Json, importUgif30Json, importUgif41Json }

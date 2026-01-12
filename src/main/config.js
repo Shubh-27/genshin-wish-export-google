@@ -12,6 +12,10 @@ const config = {
   hideNovice: true,
   gistsToken: '',
   gistsId: '',
+  googleClientId: '',
+  googleClientSecret: '',
+  googleRefreshToken: '',
+  googleDriveFileId: '',
   readableJSON: false
 }
 

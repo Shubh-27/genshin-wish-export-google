@@ -58,7 +58,8 @@ module.exports = (env = 'production') => {
       'https',
       'path',
       'electron',
-      'original-fs'
+      'original-fs',
+      'googleapis'
     ],
   }
 }

@@ -59,6 +59,20 @@
         </el-switch>
         <p class="text-gray-400 text-xs m-1.5">{{text.fetchFullHistoryHint}}</p>
       </el-form-item>
+      <el-form-item label="Google Drive">
+        <div class="flex flex-col space-y-2 w-full">
+          <div class="flex space-x-2">
+             <el-input v-model="settingForm.googleClientId" placeholder="Client ID" size="small"></el-input>
+             <el-input v-model="settingForm.googleClientSecret" placeholder="Client Secret" size="small" show-password></el-input>
+          </div>
+          <div class="flex space-x-2">
+            <el-button @click="authGoogle" type="primary" plain size="small">Auth</el-button>
+            <el-button @click="uploadGoogle" type="success" plain size="small">Upload</el-button>
+            <el-button @click="downloadGoogle" type="warning" plain size="small">Download</el-button>
+            <el-button @click="saveGoogleConfig" type="info" plain size="small">Save Config</el-button>
+          </div>
+        </div>
+      </el-form-item>
     </el-form>
     <h3 class="text-lg my-4">{{about.title}}</h3>
     <p class="text-gray-600 text-xs mt-1">{{about.license}}</p>
@@ -104,7 +118,7 @@ const text = computed(() => props.i18n.ui.setting)
 const about = computed(() => props.i18n.ui.about)
 
 const saveSetting = async () => {
-  const keys = ['lang', 'logType', 'proxyMode', 'autoUpdate', 'fetchFullHistory', 'hideNovice', 'gistsToken', 'readableJSON']
+  const keys = ['lang', 'logType', 'proxyMode', 'autoUpdate', 'fetchFullHistory', 'hideNovice', 'gistsToken', 'readableJSON', 'googleClientId', 'googleClientSecret', 'googleRefreshToken', 'googleDriveFileId']
   for (let key of keys) {
     await ipcRenderer.invoke('SAVE_CONFIG', [key, settingForm[key]])
   }
@@ -189,6 +203,40 @@ const uploadGists = async () => {
     })
   }
   uploadGistsLoading.value = false
+}
+
+const authGoogle = async () => {
+  const result = await ipcRenderer.invoke('GOOGLE_DRIVE_AUTH')
+  if (result === 'success') {
+    ElMessage.success('Authentication successful')
+  } else {
+    ElMessage.error(result)
+  }
+}
+
+const uploadGoogle = async () => {
+  const result = await ipcRenderer.invoke('GOOGLE_DRIVE_UPLOAD')
+  if (result === 'success') {
+    ElMessage.success('Upload successful')
+  } else {
+    ElMessage.error(result)
+  }
+}
+
+const downloadGoogle = async () => {
+  const result = await ipcRenderer.invoke('GOOGLE_DRIVE_DOWNLOAD')
+  if (result === 'success') {
+    ElMessage.success('Download successful')
+    emit('dataUpdated')
+    closeSetting()
+  } else {
+    ElMessage.error(result)
+  }
+}
+
+const saveGoogleConfig = async () => {
+  await saveSetting()
+  ElMessage.success('Configuration saved')
 }
 
 onMounted(async () => {
