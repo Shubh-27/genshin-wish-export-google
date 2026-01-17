@@ -12,11 +12,12 @@ const config = {
   hideNovice: true,
   gistsToken: '',
   gistsId: '',
-  googleClientId: '',
-  googleClientSecret: '',
-  googleRefreshToken: '',
-  googleDriveFileId: '',
-  readableJSON: false
+  googleAppsScriptUrl: '',
+  uigfVersion: '4.1',
+  uigfAllAccounts: true,
+  googleDriveLastSync: '',
+  readableJSON: false,
+  cloudSyncClientId: ''
 }
 
 const getLocalConfig = async () => {

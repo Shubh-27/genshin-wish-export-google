@@ -152,6 +152,9 @@ const getItemId = async (lang, name) => {
     if (response.status != 200) {
       throw new Error(`Couldn't find the item_id for the ${name}.`)
     }
+    if (!itemIdDict.has(lang)) {
+      itemIdDict.set(lang, new Map())
+    }
     itemIdDict.get(lang).set(name, responseJson.matched[0].item_id.toString())
   }
   return itemIdDict.get(lang).get(name)

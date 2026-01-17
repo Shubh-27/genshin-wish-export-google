@@ -10,6 +10,23 @@
 
 需要更详细的数据分析，可以在导出 Excel 文件后使用这个项目的网页：[链接](https://github.com/voderl/genshin-gacha-analyzer)
 
+## 云同步 (Google Drive)
+
+此分支添加了 Google Drive 云同步功能，用于备份和恢复祈愿记录。
+
+### 功能
+- 上传到云端 / 从云端下载
+- 冲突检测（哈希比较）
+- 覆盖前自动备份
+- 确认对话框防止误操作
+
+### 设置
+
+1. 访问 [Google Apps Script](https://script.google.com/) 创建新项目
+2. 复制 `GOOGLE_APPS_SCRIPT.gs` 的内容到项目中
+3. 部署为 Web App（执行身份：我，谁可以访问：任何人）
+4. 复制 Web App URL 到工具设置的"云同步"部分
+
 ## 从 Excel 恢复数据
 https://genshin-gacha-export.danmu9.com
 
@@ -28,7 +45,7 @@ https://genshin-gacha-export.danmu9.com
 2. 打开游戏的祈愿历史记录
 
    ![祈愿历史记录](/docs/wish-history.png)
-3. 点击工具的“加载数据”按钮
+3. 点击工具的"加载数据"按钮
 
    ![加载数据](/docs/load-data.png)
 
@@ -43,7 +60,7 @@ https://genshin-gacha-export.danmu9.com
 
 如果需要导出多个账号的数据，可以点击旁边的加号按钮。
 
-然后游戏切换的新账号，再打开祈愿历史记录，工具再点击“加载数据”按钮。
+然后游戏切换的新账号，再打开祈愿历史记录，工具再点击"加载数据"按钮。
 
 ## Devlopment
 
